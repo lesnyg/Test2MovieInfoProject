@@ -98,7 +98,7 @@ public class MovieGridFragment extends Fragment {
             }
         });
 
-        SearchView searchView = (SearchView) view.findViewById(R.id.search_view);
+        SearchView searchView = view.findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -108,16 +108,16 @@ public class MovieGridFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String s) {
 
-                List<Result> filteredList = new ArrayList<>();
+                List<LatestResult> filteredList = new ArrayList<>();
                 for (int i = 0; i < mResults.size(); i++) {
-                    Result result = mResults.get(i);
+                    LatestResult result = mLatestResults.get(i);
                     if (result.getTitle().toLowerCase().trim()
                             .contains(s.toLowerCase().trim())) {
                         filteredList.add(result);
                     }
                 }
 
-               // mAdapter.setitems(filteredList);
+                mAdapter.setitems(filteredList);
 
 
                 return true;
