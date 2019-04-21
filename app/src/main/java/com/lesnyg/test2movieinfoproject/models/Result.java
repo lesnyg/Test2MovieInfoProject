@@ -1,9 +1,10 @@
 
 package com.lesnyg.test2movieinfoproject.models;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Result {
+public class Result implements Serializable {
 
     private int vote_count;
     private int id;
