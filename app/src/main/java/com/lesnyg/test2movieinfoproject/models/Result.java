@@ -3,6 +3,7 @@ package com.lesnyg.test2movieinfoproject.models;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 public class Result implements Serializable {
 
@@ -133,4 +134,29 @@ public class Result implements Serializable {
         this.release_date = release_date;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Result result = (Result) o;
+        return vote_count == result.vote_count &&
+                id == result.id &&
+                video == result.video &&
+                Double.compare(result.vote_average, vote_average) == 0 &&
+                Double.compare(result.popularity, popularity) == 0 &&
+                adult == result.adult &&
+                Objects.equals(title, result.title) &&
+                Objects.equals(poster_path, result.poster_path) &&
+                Objects.equals(original_language, result.original_language) &&
+                Objects.equals(original_title, result.original_title) &&
+                Objects.equals(genre_ids, result.genre_ids) &&
+                Objects.equals(backdrop_path, result.backdrop_path) &&
+                Objects.equals(overview, result.overview) &&
+                Objects.equals(release_date, result.release_date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vote_count, id, video, vote_average, title, popularity, poster_path, original_language, original_title, genre_ids, backdrop_path, adult, overview, release_date);
+    }
 }

@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.lesnyg.test2movieinfoproject.models.Result;
-import com.lesnyg.test2movieinfoproject.models.Search;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,30 +14,25 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class MovieGridFragment extends Fragment {
     private static final String ARG_MVIMAGE = "movieImage";
     private static final String ARG_MVTITLE = "movieTitle";
-    private static final String MY_KEY = "0882850438bd0da4458576be7d4a447c";
-    private static final String MY_COUNTRY = "ko-KR";
 
     private int mMovieImage;
     private String mMovieTitle;
 
 
     RecyclerView mRecycler;
-    MovieRecyclerAdapter mAdapter;
+    MovieRecyclerAdapter mAdapter ;
 
     private List<Result> mResults = new ArrayList<>();
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
 
     public MovieGridFragment() {
@@ -74,27 +68,34 @@ public class MovieGridFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mRecycler = view.findViewById(R.id.recyclerview);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.themoviedb.org/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        MovieService service = retrofit.create(MovieService.class);
+        MovieViewModel model = ViewModelProviders.of(requireActivity()).get(MovieViewModel.class);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
 
-        service.getUpComing(MY_KEY, MY_COUNTRY).enqueue(new Callback<Search>() {
+        if(getArguments() != null){
+        model.fetchUpComing();
+        }
+        mAdapter = new MovieRecyclerAdapter(new MovieRecyclerAdapter.OnMovieClickListener() {
             @Override
-            public void onResponse(Call<Search> call, Response<Search> response) {
-                Search search = response.body();
-                mResults = search.getResults();
-                mAdapter.setitems(mResults);
-                mRecycler.setAdapter(mAdapter);
-            }
-
-            @Override
-            public void onFailure(Call<Search> call, Throwable t) {
-
+            public void onMovieClick(Result result) {
+                FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
+                        .beginTransaction();
+                transaction.replace(R.id.fragment_main, MovieDetailFragment.newInstance(result));
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
+        mRecycler.setAdapter(mAdapter);
+        model.result.observe(this, new Observer<List<Result>>() {
+            @Override
+            public void onChanged(List<Result> results) {
+                mAdapter.setitems(results);
+                mRecycler.setAdapter(mAdapter);
+                mAdapter.notifyDataSetChanged();
+                mSwipeRefreshLayout.setRefreshing(false);
+
+            }
+        });
 
         SearchView searchView = view.findViewById(R.id.search_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -116,24 +117,17 @@ public class MovieGridFragment extends Fragment {
                 }
 
                 mAdapter.setitems(filteredList);
-
-
                 return true;
             }
-
         });
 
-        mAdapter = new MovieRecyclerAdapter(new MovieRecyclerAdapter.OnMovieClickListener() {
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onMovieClick(Result result) {
-                FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
-                        .beginTransaction();
-                transaction.replace(R.id.fragment_main, MovieDetailFragment.newInstance(result));
-                transaction.addToBackStack(null);
-                transaction.commit();
+            public void onRefresh() {
+                model.fetchUpComing();
+
             }
         });
-
 
     }
 

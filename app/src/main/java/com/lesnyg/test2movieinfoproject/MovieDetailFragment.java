@@ -2,26 +2,24 @@ package com.lesnyg.test2movieinfoproject;
 
 
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.lesnyg.test2movieinfoproject.databinding.FragmentMovieDetailBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.lesnyg.test2movieinfoproject.models.Result;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProviders;
 
 
 /**
@@ -30,7 +28,6 @@ import org.greenrobot.eventbus.ThreadMode;
 public class MovieDetailFragment extends Fragment {
 
     private Result mResult;
-
 
     public MovieDetailFragment() {
         // Required empty public constructor
@@ -84,6 +81,36 @@ public class MovieDetailFragment extends Fragment {
         TextView overViewText = view.findViewById(R.id.textView_overview);
         overViewText.setText(mResult.getOverview());
 
+        MovieViewModel model = ViewModelProviders.of(requireActivity())
+                .get(MovieViewModel.class);
+        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_favorites:
+                        Toast.makeText(getActivity(), "action_favorites", Toast.LENGTH_SHORT).show();
+                        model.addFavorit(mResult);
+                        return true;
+                    case R.id.action_favoriteslist:
+                        FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
+                                .beginTransaction();
+                        transaction.replace(R.id.fragment_main, new FavoritesListFragment());
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                        Toast.makeText(getActivity(), "action_favoriteslist", Toast.LENGTH_SHORT).show();
+
+                        return true;
+                    case R.id.action_sharing:
+                        Toast.makeText(getActivity(), "action_sharing", Toast.LENGTH_SHORT).show();
+
+                        return true;
+                }
+                return false;
+            }
+        });
     }
+
+
 
 }
