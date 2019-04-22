@@ -90,14 +90,14 @@ public class MovieDetailFragment extends Fragment {
                 switch (item.getItemId()) {
                     case R.id.action_favorites:
                         Toast.makeText(getActivity(), "action_favorites", Toast.LENGTH_SHORT).show();
-                        model.addFavorit(mResult);
+//                        model.addFavorit(mResult);
                         return true;
                     case R.id.action_favoriteslist:
-                        FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
-                                .beginTransaction();
-                        transaction.replace(R.id.fragment_main, new FavoritesListFragment());
-                        transaction.addToBackStack(null);
-                        transaction.commit();
+//                        FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
+//                                .beginTransaction();
+//                        transaction.replace(R.id.fragment_main, new FavoritesListFragment());
+//                        transaction.addToBackStack(null);
+//                        transaction.commit();
                         Toast.makeText(getActivity(), "action_favoriteslist", Toast.LENGTH_SHORT).show();
 
                         return true;
