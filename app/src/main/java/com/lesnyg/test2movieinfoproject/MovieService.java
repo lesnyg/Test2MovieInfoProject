@@ -13,8 +13,8 @@ public interface MovieService {
     @GET("3/movie/upcoming")
     Call<Search> getUpComing(@Query("api_key") String key, @Query("language") String language);
 
-    @GET("3/movie/multi")
-    Call<Search> getMultiSearch(@Query("api_key") String key, @Query("language") String language);
+    @GET("3/movie/popular")
+    Call<Search> getPopular(@Query("api_key") String key, @Query("language") String language);
 
 
 }

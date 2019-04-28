@@ -7,13 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import com.lesnyg.test2movieinfoproject.models.Result;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +23,16 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.lesnyg.test2movieinfoproject.models.Result;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
 public class MovieGridFragment extends Fragment {
     private static final String ARG_MVIMAGE = "movieImage";
     private static final String ARG_MVTITLE = "movieTitle";
@@ -38,7 +44,6 @@ public class MovieGridFragment extends Fragment {
     RecyclerView mRecycler;
     MovieRecyclerAdapter mAdapter;
 
-    private List<Result> mResults = new ArrayList<>();
     SwipeRefreshLayout mSwipeRefreshLayout;
     private MovieViewModel mModel;
 
@@ -96,6 +101,14 @@ public class MovieGridFragment extends Fragment {
         });
 
         mRecycler.setAdapter(mAdapter);
+        String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date(System.currentTimeMillis()));
+        List<Result> notiResult = new ArrayList<>();
+        for (int i = 0; i < notiResult.size(); i++) {
+            Result result = notiResult.get(i);
+            if (Integer.valueOf(result.getRelease_date()) > Integer.valueOf(today)) {
+                noti();
+            }
+        }
         mModel.filteredResult.observe(this, new Observer<List<Result>>() {
             @Override
             public void onChanged(List<Result> results) {
@@ -103,7 +116,8 @@ public class MovieGridFragment extends Fragment {
                 mRecycler.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
                 mSwipeRefreshLayout.setRefreshing(false);
-                }
+
+            }
 
         });
 
@@ -116,11 +130,11 @@ public class MovieGridFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String s) {
-                mModel.search(s);
+                mModel.fetchSearch(s);
                 return true;
             }
         });
-        mModel.fetchUpComing();
+
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -129,38 +143,65 @@ public class MovieGridFragment extends Fragment {
 
             }
         });
+        BottomNavigationView bottomNavigationView = view.findViewById(R.id.bottom_navigation_sort);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId()){
+                    case R.id.action_datesort:
+                        sorting();
+                        return true;
+                    case R.id.action_popularsort:
+                        mModel.fetchPopular();
+                        return true;
+                }
+                return false;
+            }
+        });
 
 
     }
 
     public void noti() {
-                NotificationCompat.Builder mBuilder =
-                        new NotificationCompat.Builder(requireActivity(), "default")
-                                .setSmallIcon(R.drawable.ic_notifications_none_black_24dp)
-                                .setContentTitle("New Movie")
-                                .setContentText("새로운 영화가 등록되었습니다.")
-                                .setAutoCancel(true);
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(requireActivity(), "default")
+                        .setSmallIcon(R.drawable.ic_notifications_none_black_24dp)
+                        .setContentTitle("New Movie")
+                        .setContentText("개봉 예정인 영화가 있습니다.")
+                        .setAutoCancel(true);
 
-                Intent resultIntent = new Intent(requireActivity(), MainActivity.class);
+        Intent resultIntent = new Intent(requireActivity(), MainActivity.class);
 
-                TaskStackBuilder stackBuilder = TaskStackBuilder.create(requireActivity());
-                stackBuilder.addParentStack(MainActivity.class);
-                stackBuilder.addNextIntent(resultIntent);
-                PendingIntent resultPendingIntent =
-                        stackBuilder.getPendingIntent(
-                                0,
-                                PendingIntent.FLAG_UPDATE_CURRENT
-                        );
-                mBuilder.setContentIntent(resultPendingIntent);
-                NotificationManager mNotificationManager =
-                        (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                mNotificationManager.createNotificationChannel(new NotificationChannel("default", "기본채널",
-                        NotificationManager.IMPORTANCE_DEFAULT));
-                mNotificationManager.notify(1, mBuilder.build());
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(requireActivity());
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.createNotificationChannel(new NotificationChannel("default", "기본채널",
+                NotificationManager.IMPORTANCE_DEFAULT));
+        mNotificationManager.notify(1, mBuilder.build());
+    }
+
+    public void sorting(){
+        List<Result> resultList = new ArrayList<>();
+        resultList = mModel.filteredResult.getValue();
+        Collections.sort(resultList, new Comparator<Result>() {
+            @Override
+            public int compare(Result o1, Result o2) {
+                return o2.getRelease_date().compareTo(o1.getRelease_date());
             }
+        });
 
+         mAdapter.setitems(resultList);
+    }
 
-        }
+    }
 
 
 

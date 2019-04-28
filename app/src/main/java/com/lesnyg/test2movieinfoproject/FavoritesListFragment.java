@@ -1,12 +1,12 @@
 package com.lesnyg.test2movieinfoproject;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
@@ -14,12 +14,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.lesnyg.test2movieinfoproject.databinding.FragmentFavoritesListBinding;
 import com.lesnyg.test2movieinfoproject.models.Result;
 
 import java.util.ArrayList;
@@ -34,7 +28,15 @@ public class FavoritesListFragment extends Fragment {
     private List<Result> mResults = new ArrayList<>();
     SwipeRefreshLayout mSwipeRefreshLayout;
     private MovieViewModel mModel;
+
     public FavoritesListFragment() {
+    }
+
+    public static FavoritesListFragment newInstance() {
+        FavoritesListFragment fragment = new FavoritesListFragment();
+        Bundle bundle = new Bundle();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override

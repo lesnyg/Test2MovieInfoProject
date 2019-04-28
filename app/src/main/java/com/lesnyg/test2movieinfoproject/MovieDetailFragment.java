@@ -96,7 +96,6 @@ public class MovieDetailFragment extends Fragment {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_favorites:
-                        Toast.makeText(getActivity(), "action_favorites", Toast.LENGTH_SHORT).show();
                         model.addFavorit(mResult);
                         return true;
                     case R.id.action_favoriteslist:
@@ -105,7 +104,6 @@ public class MovieDetailFragment extends Fragment {
                         transaction.replace(R.id.fragment_main, new FavoritesListFragment());
                         transaction.addToBackStack(null);
                         transaction.commit();
-                        Toast.makeText(getActivity(), "action_favoriteslist", Toast.LENGTH_SHORT).show();
 
                         return true;
                     case R.id.action_sharing:

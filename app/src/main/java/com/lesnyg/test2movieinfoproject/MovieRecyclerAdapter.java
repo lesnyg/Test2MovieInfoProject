@@ -1,24 +1,20 @@
 package com.lesnyg.test2movieinfoproject;
 
 
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.lesnyg.test2movieinfoproject.models.Result;
-import com.lesnyg.test2movieinfoproject.models.Search;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdapter.MovieHolder> {
     List<Result> mList = new ArrayList<>();
@@ -58,7 +54,7 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
         movieHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListener !=null){
+                if (mListener != null) {
                     mListener.onMovieClick(mList.get(movieHolder.getAdapterPosition()));
                 }
             }

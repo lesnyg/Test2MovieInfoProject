@@ -18,6 +18,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MovieViewModel extends ViewModel {
     public MutableLiveData<List<Result>> filteredResult = new MutableLiveData<>();
+    public MutableLiveData<List<Result>> searchResult = new MutableLiveData<>();
+
     private static final String MY_KEY = "0882850438bd0da4458576be7d4a447c";
     private static final String MY_COUNTRY = "ko-KR";
     public MutableLiveData<List<Result>> favoritList = new MutableLiveData<>();
@@ -36,7 +38,9 @@ public class MovieViewModel extends ViewModel {
          service.getUpComing(MY_KEY, MY_COUNTRY).enqueue(new Callback<Search>() {
              @Override
              public void onResponse(Call<Search> call, Response<Search> response) {
-                 filteredResult.setValue(response.body().getResults());;
+                 if(response.body() != null) {
+                     filteredResult.setValue(response.body().getResults());
+                 }
              }
              @Override
              public void onFailure(Call<Search> call, Throwable t) {
@@ -45,10 +49,41 @@ public class MovieViewModel extends ViewModel {
          });
      }
      public  void fetchFavorite(){
-        service.getMultiSearch(MY_KEY,MY_COUNTRY).enqueue(new Callback<Search>() {
+        service.getPopular(MY_KEY,MY_COUNTRY).enqueue(new Callback<Search>() {
             @Override
             public void onResponse(Call<Search> call, Response<Search> response) {
                 favoritList.setValue(response.body().getResults());
+            }
+
+            @Override
+            public void onFailure(Call<Search> call, Throwable t) {
+
+            }
+        });
+     }
+     public  void fetchPopular(){
+        service.getPopular(MY_KEY,MY_COUNTRY).enqueue(new Callback<Search>() {
+            @Override
+            public void onResponse(Call<Search> call, Response<Search> response) {
+                if(response.body() != null) {
+                    filteredResult.setValue(response.body().getResults());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Search> call, Throwable t) {
+
+            }
+        });
+     }
+
+     public void fetchSearch(String quary){
+        service.getSearch(MY_KEY,quary,MY_COUNTRY).enqueue(new Callback<Search>() {
+            @Override
+            public void onResponse(Call<Search> call, Response<Search> response) {
+                if(response.body() != null) {
+                    filteredResult.setValue(response.body().getResults());
+                }
             }
 
             @Override
@@ -69,31 +104,5 @@ public class MovieViewModel extends ViewModel {
      public void removeFavorit(Result item){
          favoritList.getValue().remove(item);
          favoritList.setValue(favoritList.getValue());
-     }
-
-     public void sorting(){
-         MovieViewModel model = new MovieViewModel();
-         List<Result> resultList = new ArrayList<>();
-         resultList = model.filteredResult.getValue();
-         Collections.sort(resultList, new Comparator<Result>() {
-             @Override
-             public int compare(Result o1, Result o2) {
-                 return o1.getRelease_date().compareTo(o2.getRelease_date());
-             }
-         });
-
-     }
-
-     public void search(String query){
-         List<Result> filteredList = new ArrayList<>();
-         for (int i = 0; i < mResults.size(); i++) {
-             Result result = mResults.get(i);
-             if (result.getTitle().toLowerCase().trim()
-                     .contains(query.toLowerCase().trim())) {
-                 filteredList.add(result);
-             }
-         }
-
-         filteredResult.setValue(filteredList);
      }
 }
