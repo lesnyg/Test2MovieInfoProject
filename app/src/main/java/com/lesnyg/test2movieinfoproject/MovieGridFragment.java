@@ -1,5 +1,10 @@
 package com.lesnyg.test2movieinfoproject;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +18,8 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
@@ -29,10 +36,11 @@ public class MovieGridFragment extends Fragment {
 
 
     RecyclerView mRecycler;
-    MovieRecyclerAdapter mAdapter ;
+    MovieRecyclerAdapter mAdapter;
 
     private List<Result> mResults = new ArrayList<>();
     SwipeRefreshLayout mSwipeRefreshLayout;
+    private MovieViewModel mModel;
 
 
     public MovieGridFragment() {
@@ -54,6 +62,7 @@ public class MovieGridFragment extends Fragment {
             mMovieTitle = getArguments().getString(ARG_MVTITLE);
         }
 
+
     }
 
     @Override
@@ -68,11 +77,12 @@ public class MovieGridFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         mRecycler = view.findViewById(R.id.recyclerview);
-        MovieViewModel model = ViewModelProviders.of(requireActivity()).get(MovieViewModel.class);
+        mModel = ViewModelProviders.of(requireActivity()).get(MovieViewModel.class);
+
         mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
 
-        if(getArguments() != null){
-        model.fetchUpComing();
+        if (getArguments() != null) {
+            mModel.fetchUpComing();
         }
         mAdapter = new MovieRecyclerAdapter(new MovieRecyclerAdapter.OnMovieClickListener() {
             @Override
@@ -86,15 +96,15 @@ public class MovieGridFragment extends Fragment {
         });
 
         mRecycler.setAdapter(mAdapter);
-        model.result.observe(this, new Observer<List<Result>>() {
+        mModel.filteredResult.observe(this, new Observer<List<Result>>() {
             @Override
             public void onChanged(List<Result> results) {
                 mAdapter.setitems(results);
                 mRecycler.setAdapter(mAdapter);
                 mAdapter.notifyDataSetChanged();
                 mSwipeRefreshLayout.setRefreshing(false);
+                }
 
-            }
         });
 
         SearchView searchView = view.findViewById(R.id.search_view);
@@ -106,33 +116,55 @@ public class MovieGridFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String s) {
-
-                List<Result> filteredList = new ArrayList<>();
-                for (int i = 0; i < mResults.size(); i++) {
-                    Result result = mResults.get(i);
-                    if (result.getTitle().toLowerCase().trim()
-                            .contains(s.toLowerCase().trim())) {
-                        filteredList.add(result);
-                    }
-                }
-
-                mAdapter.setitems(filteredList);
+                mModel.search(s);
                 return true;
             }
         });
+        mModel.fetchUpComing();
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                model.fetchUpComing();
+                mModel.fetchUpComing();
 
             }
         });
 
+
     }
 
+    public void noti() {
+                NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(requireActivity(), "default")
+                                .setSmallIcon(R.drawable.ic_notifications_none_black_24dp)
+                                .setContentTitle("New Movie")
+                                .setContentText("새로운 영화가 등록되었습니다.")
+                                .setAutoCancel(true);
 
-}
+                Intent resultIntent = new Intent(requireActivity(), MainActivity.class);
+
+                TaskStackBuilder stackBuilder = TaskStackBuilder.create(requireActivity());
+                stackBuilder.addParentStack(MainActivity.class);
+                stackBuilder.addNextIntent(resultIntent);
+                PendingIntent resultPendingIntent =
+                        stackBuilder.getPendingIntent(
+                                0,
+                                PendingIntent.FLAG_UPDATE_CURRENT
+                        );
+                mBuilder.setContentIntent(resultPendingIntent);
+                NotificationManager mNotificationManager =
+                        (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                mNotificationManager.createNotificationChannel(new NotificationChannel("default", "기본채널",
+                        NotificationManager.IMPORTANCE_DEFAULT));
+                mNotificationManager.notify(1, mBuilder.build());
+            }
+
+
+        }
+
+
+
+
 
 
 

@@ -1,6 +1,11 @@
 package com.lesnyg.test2movieinfoproject;
 
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -17,6 +22,8 @@ import com.lesnyg.test2movieinfoproject.models.Result;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
@@ -27,7 +34,7 @@ import androidx.lifecycle.ViewModelProviders;
  */
 public class MovieDetailFragment extends Fragment {
 
-    private Result mResult;
+    private Result mResult ;
 
     public MovieDetailFragment() {
         // Required empty public constructor
@@ -36,7 +43,7 @@ public class MovieDetailFragment extends Fragment {
     public static MovieDetailFragment newInstance(Result result) {
         MovieDetailFragment fragment = new MovieDetailFragment();
         Bundle bundle = new Bundle();
-        bundle.putSerializable("result", result);
+        bundle.putSerializable("filteredResult", result);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -44,8 +51,8 @@ public class MovieDetailFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null){
-            mResult = (Result) getArguments().getSerializable("result");
+        if (getArguments() != null) {
+            mResult = (Result) getArguments().getSerializable("filteredResult");
         }
     }
 
@@ -77,7 +84,7 @@ public class MovieDetailFragment extends Fragment {
         TextView titleText = view.findViewById(R.id.textView_title);
         titleText.setText(mResult.getTitle());
         TextView dateText = view.findViewById(R.id.textView_releasedate);
-        dateText.setText("상영일 : "+mResult.getRelease_date());
+        dateText.setText("상영일 : " + mResult.getRelease_date());
         TextView overViewText = view.findViewById(R.id.textView_overview);
         overViewText.setText(mResult.getOverview());
 
@@ -90,27 +97,35 @@ public class MovieDetailFragment extends Fragment {
                 switch (item.getItemId()) {
                     case R.id.action_favorites:
                         Toast.makeText(getActivity(), "action_favorites", Toast.LENGTH_SHORT).show();
-//                        model.addFavorit(mResult);
+                        model.addFavorit(mResult);
                         return true;
                     case R.id.action_favoriteslist:
-//                        FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
-//                                .beginTransaction();
-//                        transaction.replace(R.id.fragment_main, new FavoritesListFragment());
-//                        transaction.addToBackStack(null);
-//                        transaction.commit();
+                        FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
+                                .beginTransaction();
+                        transaction.replace(R.id.fragment_main, new FavoritesListFragment());
+                        transaction.addToBackStack(null);
+                        transaction.commit();
                         Toast.makeText(getActivity(), "action_favoriteslist", Toast.LENGTH_SHORT).show();
 
                         return true;
                     case R.id.action_sharing:
                         Toast.makeText(getActivity(), "action_sharing", Toast.LENGTH_SHORT).show();
-
+                        Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                        intent.setType("text/plain");
+//                        intent.setType("image/*");
+                        String text = "원하는 텍스트를 입력하세요";
+//                        intent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file:///"+posterPath));
+                        intent.putExtra(Intent.EXTRA_TEXT, mResult.getTitle());
+                        Intent chooser = Intent.createChooser(intent, "친구에게 공유하기");
+                        startActivity(chooser);
                         return true;
                 }
                 return false;
             }
         });
-    }
 
+
+    }
 
 
 }

@@ -14,7 +14,7 @@ public interface MovieService {
     Call<Search> getUpComing(@Query("api_key") String key, @Query("language") String language);
 
     @GET("3/movie/multi")
-    Call<Search> getMultiSearch(@Query("api_key") String key,@Query("query") String query, @Query("language") String language);
+    Call<Search> getMultiSearch(@Query("api_key") String key, @Query("language") String language);
 
 
 }
