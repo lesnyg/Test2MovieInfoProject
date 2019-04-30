@@ -89,8 +89,13 @@ public class MovieDetailFragment extends Fragment {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_favorites:
-                        //if(mResult.getId() != model.mDb.resultDao().){
-                        model.addFavorit(mResult);
+                        MovieFavoriteAdapter adapter = new MovieFavoriteAdapter();
+                        for (int i = 0; i < adapter.mList.size(); i++) {
+                            if(mResult.getId() != adapter.mList.get(i).getId()) {
+                                model.addFavorit(mResult);
+                            }
+                        }
+
                         return true;
                     case R.id.action_favoriteslist:
                         FragmentTransaction transaction = requireActivity().getSupportFragmentManager()

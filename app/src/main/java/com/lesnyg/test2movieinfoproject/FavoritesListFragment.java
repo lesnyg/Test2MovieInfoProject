@@ -22,6 +22,8 @@ import java.util.List;
 
 public class FavoritesListFragment extends Fragment {
 
+    private Result mResult;
+
     public FavoritesListFragment() {
     }
 
@@ -58,20 +60,20 @@ public class FavoritesListFragment extends Fragment {
         });
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_favorites);
-//        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-//                ItemTouchHelper.LEFT) {
-//            @Override
-//            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
-//                return false;
-//            }
-//
-//            @Override
-//            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-//                Result result = adapter.mList.get(i);
-//                viewModel.deleteFavorit(result);
-//            }
-//        });
-//        helper.attachToRecyclerView(recyclerView);
+        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                mResult = adapter.mList.get(i);
+                viewModel.deleteFavorit(mResult);
+            }
+        });
+        helper.attachToRecyclerView(recyclerView);
 
 
         recyclerView.setAdapter(adapter);

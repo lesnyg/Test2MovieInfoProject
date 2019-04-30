@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -50,6 +51,10 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
                 .placeholder(R.mipmap.ic_launcher)
                 .into(movieHolder.movieimage);
         movieHolder.textTitle.setText(result.getTitle());
+        movieHolder.ratingBar.setRating((float)(result.getVote_average()/2));
+
+
+
 
         movieHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,11 +74,13 @@ public class MovieRecyclerAdapter extends RecyclerView.Adapter<MovieRecyclerAdap
     public class MovieHolder extends RecyclerView.ViewHolder {
         private ImageView movieimage;
         private TextView textTitle;
+        private RatingBar ratingBar;
 
         public MovieHolder(@NonNull View itemView) {
             super(itemView);
             movieimage = itemView.findViewById(R.id.imageView_movie);
             textTitle = itemView.findViewById(R.id.text_title);
+            ratingBar = itemView.findViewById(R.id.ratingbar);
         }
     }
 
