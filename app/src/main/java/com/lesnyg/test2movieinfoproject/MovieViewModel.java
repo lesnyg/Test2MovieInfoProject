@@ -28,6 +28,8 @@ public class MovieViewModel extends AndroidViewModel {
     private static final String MY_COUNTRY = "ko-KR";
     public MutableLiveData<List<Result>> favoritList = new MutableLiveData<>();
     private List<Result> mResults = new ArrayList<>();
+
+    // 즐겨찾기
     public LiveData<List<Result>> result;
     public AppDatabase mDb;
      private Retrofit retrofit = new Retrofit.Builder()
@@ -43,7 +45,7 @@ public class MovieViewModel extends AndroidViewModel {
                 .allowMainThreadQueries()   // MainThread에서 DB 사용 가능
                 .build();
 
-            result = mDb.resultDao().getAll();
+        result = mDb.resultDao().getAll();
 
     }
 

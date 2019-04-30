@@ -12,11 +12,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.lesnyg.test2movieinfoproject.models.Result;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -86,7 +84,7 @@ public class FavoritesListFragment extends Fragment {
 //
 //            }
 //        });
-        viewModel.result.observe(this, (List<Result> items) -> {
+        viewModel.result.observe(requireActivity(), (List<Result> items) -> {
             adapter.updateItems(items);
         });
     }

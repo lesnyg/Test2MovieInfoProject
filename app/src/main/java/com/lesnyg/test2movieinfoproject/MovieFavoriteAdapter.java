@@ -1,8 +1,6 @@
 package com.lesnyg.test2movieinfoproject;
 
 
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -21,7 +18,8 @@ import java.util.List;
 
 public class MovieFavoriteAdapter extends RecyclerView.Adapter<MovieFavoriteAdapter.MovieHolder> {
     List<Result> mList = new ArrayList<>();
-    public MovieFavoriteAdapter(){
+
+    public MovieFavoriteAdapter() {
 
     }
 
@@ -33,15 +31,11 @@ public class MovieFavoriteAdapter extends RecyclerView.Adapter<MovieFavoriteAdap
         mList = items;
         notifyDataSetChanged();
     }
+
     public void updateItems(List<Result> items) {
-        new Thread(() -> {
-            final DiffUtil.DiffResult result = DiffUtil.calculateDiff(new ListDiffCallback(this.mList, items));
-
-            mList.clear();
-            mList.addAll(items);
-
-            new Handler(Looper.getMainLooper()).post(() -> result.dispatchUpdatesTo(this));
-        }).start();
+        mList.clear();
+        mList.addAll(items);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -53,7 +47,7 @@ public class MovieFavoriteAdapter extends RecyclerView.Adapter<MovieFavoriteAdap
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListener != null){
+                if (mListener != null) {
                     final Result item = mList.get(movieHolder.getAdapterPosition());
                     mListener.onFavoriteClick(item);
                 }
