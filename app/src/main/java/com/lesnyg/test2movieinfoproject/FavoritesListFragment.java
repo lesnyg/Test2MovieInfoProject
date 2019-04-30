@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -48,11 +49,11 @@ public class FavoritesListFragment extends Fragment {
         MovieFavoriteAdapter adapter = new MovieFavoriteAdapter(new MovieFavoriteAdapter.OnFavoriteClickListener() {
             @Override
             public void onFavoriteClick(Result item) {
-//                FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
-//                        .beginTransaction();
-//                transaction.replace(R.id.fragment_main, MovieDetailFragment.newInstance(item.getResult()));
-//                transaction.addToBackStack(null);
-//                transaction.commit();
+                FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
+                        .beginTransaction();
+                transaction.replace(R.id.fragment_main, MovieDetailFragment.newInstance(item));
+                transaction.addToBackStack(null);
+                transaction.commit();
             }
         });
 
@@ -66,7 +67,7 @@ public class FavoritesListFragment extends Fragment {
 //
 //            @Override
 //            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-//                Result result = adapter.mResults.get(i);
+//                Result result = adapter.mList.get(i);
 //                viewModel.deleteFavorit(result);
 //            }
 //        });

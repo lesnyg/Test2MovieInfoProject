@@ -29,7 +29,7 @@ public class MovieViewModel extends AndroidViewModel {
     public MutableLiveData<List<Result>> favoritList = new MutableLiveData<>();
     private List<Result> mResults = new ArrayList<>();
     public LiveData<List<Result>> result;
-    private AppDatabase mDb;
+    public AppDatabase mDb;
      private Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.themoviedb.org/")
                 .addConverterFactory(GsonConverterFactory.create())
