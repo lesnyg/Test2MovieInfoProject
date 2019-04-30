@@ -69,7 +69,7 @@ public class FavoritesListFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-                mResult = adapter.mList.get(i);
+                mResult = adapter.mList.get(viewHolder.getAdapterPosition());
                 viewModel.deleteFavorit(mResult);
             }
         });
