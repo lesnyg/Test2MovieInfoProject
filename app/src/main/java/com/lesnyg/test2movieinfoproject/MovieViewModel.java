@@ -1,22 +1,26 @@
 package com.lesnyg.test2movieinfoproject;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.room.Room;
+
 import com.lesnyg.test2movieinfoproject.models.Result;
 import com.lesnyg.test2movieinfoproject.models.Search;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MovieViewModel extends ViewModel {
+public class MovieViewModel extends AndroidViewModel {
     public MutableLiveData<List<Result>> filteredResult = new MutableLiveData<>();
     public MutableLiveData<List<Result>> searchResult = new MutableLiveData<>();
 
@@ -24,15 +28,25 @@ public class MovieViewModel extends ViewModel {
     private static final String MY_COUNTRY = "ko-KR";
     public MutableLiveData<List<Result>> favoritList = new MutableLiveData<>();
     private List<Result> mResults = new ArrayList<>();
+    public LiveData<List<Result>> result;
+    private AppDatabase mDb;
      private Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.themoviedb.org/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
      private MovieService service = retrofit.create(MovieService.class);
 
-    public MovieViewModel() {
-        favoritList.setValue(new ArrayList<>());
+    public MovieViewModel(@NonNull Application application) {
+        super(application);
+        mDb = Room.databaseBuilder(application,
+                AppDatabase.class, "database-name")
+                .allowMainThreadQueries()   // MainThread에서 DB 사용 가능
+                .build();
+
+            result = mDb.resultDao().getAll();
+
     }
+
 
     public void fetchUpComing(){
          service.getUpComing(MY_KEY, MY_COUNTRY).enqueue(new Callback<Search>() {
@@ -48,19 +62,19 @@ public class MovieViewModel extends ViewModel {
              }
          });
      }
-     public  void fetchFavorite(){
-        service.getPopular(MY_KEY,MY_COUNTRY).enqueue(new Callback<Search>() {
-            @Override
-            public void onResponse(Call<Search> call, Response<Search> response) {
-                favoritList.setValue(response.body().getResults());
-            }
-
-            @Override
-            public void onFailure(Call<Search> call, Throwable t) {
-
-            }
-        });
-     }
+//     public  void fetchFavorite(){
+//        service.getPopular(MY_KEY,MY_COUNTRY).enqueue(new Callback<Search>() {
+//            @Override
+//            public void onResponse(Call<Search> call, Response<Search> response) {
+//                favoritList.setValue(response.body().getResults());
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Search> call, Throwable t) {
+//
+//            }
+//        });
+//     }
      public  void fetchPopular(){
         service.getPopular(MY_KEY,MY_COUNTRY).enqueue(new Callback<Search>() {
             @Override
@@ -94,15 +108,19 @@ public class MovieViewModel extends ViewModel {
      }
 
      //즐겨찾기 추가하기
-     public void addFavorit(Result item){
-         List<Result> list = favoritList.getValue();
-         list.add(item);
+     public void addFavorit(Result result){
+//         List<Result> list = favoritList.getValue();
+//         list.add(item);
+//
+//         favoritList.setValue(list);
 
-         favoritList.setValue(list);
+
+         mDb.resultDao().insertFavorite(result);
      }
      //즐겨찾기 삭제하기
-     public void removeFavorit(Result item){
-         favoritList.getValue().remove(item);
-         favoritList.setValue(favoritList.getValue());
+     public void deleteFavorit(Result result){
+//         favoritList.getValue().remove(item);
+//         favoritList.setValue(favoritList.getValue());
+         mDb.resultDao().deleteFavorite(result);
      }
 }

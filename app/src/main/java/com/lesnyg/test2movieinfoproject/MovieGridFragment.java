@@ -147,7 +147,7 @@ public class MovieGridFragment extends Fragment {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId()){
+                switch (menuItem.getItemId()) {
                     case R.id.action_datesort:
                         sorting();
                         return true;
@@ -188,7 +188,7 @@ public class MovieGridFragment extends Fragment {
         mNotificationManager.notify(1, mBuilder.build());
     }
 
-    public void sorting(){
+    public void sorting() {
         List<Result> resultList = new ArrayList<>();
         resultList = mModel.filteredResult.getValue();
         Collections.sort(resultList, new Comparator<Result>() {
@@ -198,10 +198,10 @@ public class MovieGridFragment extends Fragment {
             }
         });
 
-         mAdapter.setitems(resultList);
+        mAdapter.setitems(resultList);
     }
 
-    }
+}
 
 
 

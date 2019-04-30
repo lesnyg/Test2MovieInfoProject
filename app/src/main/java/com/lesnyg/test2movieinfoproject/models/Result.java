@@ -1,13 +1,19 @@
 
 package com.lesnyg.test2movieinfoproject.models;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class Result implements Serializable {
 
     private int vote_count;
+    @PrimaryKey
     private int id;
     private boolean video;
     private double vote_average;
@@ -16,6 +22,7 @@ public class Result implements Serializable {
     private String poster_path;
     private String original_language;
     private String original_title;
+    @Ignore
     private List<Integer> genre_ids = null;
     private String backdrop_path;
     private boolean adult;

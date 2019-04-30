@@ -8,9 +8,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -21,13 +20,6 @@ import java.util.List;
 
 
 public class FavoritesListFragment extends Fragment {
-
-    RecyclerView mRecycler;
-    MovieRecyclerAdapter mAdapter;
-
-    private List<Result> mResults = new ArrayList<>();
-    SwipeRefreshLayout mSwipeRefreshLayout;
-    private MovieViewModel mModel;
 
     public FavoritesListFragment() {
     }
@@ -53,31 +45,51 @@ public class FavoritesListFragment extends Fragment {
         MovieViewModel viewModel = ViewModelProviders.of(requireActivity())
                 .get(MovieViewModel.class);
 
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerview_favorites);
-
         MovieFavoriteAdapter adapter = new MovieFavoriteAdapter(new MovieFavoriteAdapter.OnFavoriteClickListener() {
             @Override
             public void onFavoriteClick(Result item) {
-                FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
-                        .beginTransaction();
-                transaction.replace(R.id.fragment_main, MovieDetailFragment.newInstance(item));
-                transaction.addToBackStack(null);
-                transaction.commit();
+//                FragmentTransaction transaction = requireActivity().getSupportFragmentManager()
+//                        .beginTransaction();
+//                transaction.replace(R.id.fragment_main, MovieDetailFragment.newInstance(item.getResult()));
+//                transaction.addToBackStack(null);
+//                transaction.commit();
             }
         });
-        recyclerView.setAdapter(adapter);
-        viewModel.favoritList.observe(this, new Observer<List<Result>>() {
-            @Override
-            public void onChanged(List<Result> results) {
-                adapter.setitems(results);
-                recyclerView.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
 
-            }
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerview_favorites);
+//        ItemTouchHelper helper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+//                ItemTouchHelper.LEFT) {
+//            @Override
+//            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+//                Result result = adapter.mResults.get(i);
+//                viewModel.deleteFavorit(result);
+//            }
+//        });
+//        helper.attachToRecyclerView(recyclerView);
+
+
+        recyclerView.setAdapter(adapter);
+//        viewModel.favoritList.observe(this, new Observer<List<Favorite>>() {
+//            @Override
+//            public void onChanged(List<Favorite> favorites) {
+//                adapter.setitems(favorites);
+//                recyclerView.setAdapter(adapter);
+//                adapter.notifyDataSetChanged();
+//
+//            }
+//        });
+        viewModel.result.observe(this, (List<Result> items) -> {
+            adapter.updateItems(items);
         });
+    }
 
 
     }
 
 
-}
+
